@@ -9,7 +9,7 @@ Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
 {
 	int resolution_width;
 	glfwGetWindowSize(window, &resolution_width, NULL);
-	cellSize = (float)resolution_width / gameToRender->getWidth();
+    reversedCellSize = (float)gameToRender->getWidth()/resolution_width;
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -55,11 +55,13 @@ Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
     glGenVertexArrays(1, &dummyVAO);
 
     
-    grid_width_uniform = glGetUniformLocation(shaderProgram, "grid_width");
+    grid_size_uniform = glGetUniformLocation(shaderProgram, "grid_size");
     reversed_cell_size_uniform = glGetUniformLocation(shaderProgram, "reversed_cell_size");
+    view_shift_uniform = glGetUniformLocation(shaderProgram, "view_shift");
     glUseProgram(shaderProgram);
-    glUniform1i(grid_width_uniform, gameToRender->getWidth());
-    glUniform1f(reversed_cell_size_uniform, 1.0/cellSize);
+    glUniform2i(grid_size_uniform, gameToRender->getWidth(), gameToRender->getHeight());
+    glUniform1f(reversed_cell_size_uniform, reversedCellSize);
+    glUniform2f(view_shift_uniform, 0.0, 0.0);
     
 
     //view = RenderView(resolution_width, );
@@ -69,7 +71,7 @@ Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
 Renderer::Renderer() :
 	window(NULL),
 	gameToRender(NULL),
-	cellSize(0)
+    reversedCellSize(0)
 {}
 
 //Renderer::~Renderer()
@@ -83,16 +85,17 @@ Renderer& Renderer::operator=(const Renderer& other)
 {
 	this->window = other.window;
 	this->gameToRender = other.gameToRender;
-	this->cellSize = other.cellSize;
+	this->reversedCellSize = other.reversedCellSize;
     this->shaderProgram = other.shaderProgram;
     this->ssbo_front = other.ssbo_front;
     this->dummyVAO = other.dummyVAO;
-    //this->view = other.view;
+
     this->reversed_cell_size_uniform = other.reversed_cell_size_uniform;
-    this->grid_width_uniform = other.grid_width_uniform;
+    this->grid_size_uniform = other.grid_size_uniform;
+    this->view_shift_uniform = other.view_shift_uniform;
 
     std::cout << "renderer copied" << std::endl;
-    std::cout << other.grid_width_uniform <<" ; " << reversed_cell_size_uniform  << std::endl;
+    std::cout << other.grid_size_uniform <<" ; " << reversed_cell_size_uniform  << std::endl;
     return *this;
 }
 

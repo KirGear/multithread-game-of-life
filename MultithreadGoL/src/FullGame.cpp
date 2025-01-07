@@ -36,7 +36,7 @@ void FullGame::run()
     {
 		handleEvents();
 
-        Sleep(100);
+        Sleep(DEFAULT_ITERATION_DELAY);
         renderer.render();
 		automata.update();
     }
@@ -51,19 +51,38 @@ void FullGame::handleEvents()
 	}
 
 	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetKeyCallback(window, key_callback);
 }
 
 void FullGame::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	FullGame* game_instance = static_cast<FullGame*>(glfwGetWindowUserPointer(window));
-	std::cout << game_instance->renderer.cellSize << "\n";
-	if (yoffset < 0) {
-		game_instance->renderer.cellSize *= 0.9;
-		glUniform1f(game_instance->renderer.reversed_cell_size_uniform, 1.0 / game_instance->renderer.cellSize);
+	std::cout << game_instance->renderer.reversedCellSize << "\n";
+	if (yoffset > 0) {
+		game_instance->renderer.reversedCellSize *= 0.9;
+		glUniform1f(game_instance->renderer.reversed_cell_size_uniform, game_instance->renderer.reversedCellSize);
 	}
-	else if (yoffset > 0) {
-		game_instance->renderer.cellSize *= 1.1;
-		glUniform1f(game_instance->renderer.reversed_cell_size_uniform, 1.0 / game_instance->renderer.cellSize);
+	else if (yoffset < 0) {
+		game_instance->renderer.reversedCellSize *= 1.1;
+		glUniform1f(game_instance->renderer.reversed_cell_size_uniform, game_instance->renderer.reversedCellSize);
+	}
+}
+
+void FullGame::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	FullGame* game_instance = static_cast<FullGame*>(glfwGetWindowUserPointer(window));
+	std::cout << "pressed\n";
+	if (action== GLFW_PRESS) {
+		switch (key) {
+		case GLFW_KEY_UP:
+			std::cout << "up\n";
+			glUniform2f(game_instance->renderer.view_shift_uniform, 0.0, 200.0);
+			break;
+		case GLFW_KEY_DOWN:
+			std::cout << "down\n";
+			glUniform2f(game_instance->renderer.view_shift_uniform, 0.0, 0.0);
+			break;
+		}
 	}
 }
 
