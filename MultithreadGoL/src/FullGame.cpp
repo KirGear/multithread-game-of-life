@@ -19,7 +19,9 @@ FullGame::FullGame(const int& gridSize1, const int& gridSize2, const int& window
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 	}
+
 	glfwMakeContextCurrent(window);
+	glfwSetWindowUserPointer(window, this);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -32,13 +34,37 @@ void FullGame::run()
 {
     while (!glfwWindowShouldClose(window))
     {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, true);
+		handleEvents();
 
         Sleep(100);
         renderer.render();
-        automata.update();
-
-        glfwPollEvents();
+		automata.update();
     }
 }
+
+
+void FullGame::handleEvents()
+{
+	glfwPollEvents();
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, true);
+	}
+
+	glfwSetScrollCallback(window, scroll_callback);
+}
+
+void FullGame::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	FullGame* game_instance = static_cast<FullGame*>(glfwGetWindowUserPointer(window));
+	std::cout << game_instance->renderer.cellSize << "\n";
+	if (yoffset < 0) {
+		game_instance->renderer.cellSize *= 0.9;
+		glUniform1f(game_instance->renderer.reversed_cell_size_uniform, 1.0 / game_instance->renderer.cellSize);
+	}
+	else if (yoffset > 0) {
+		game_instance->renderer.cellSize *= 1.1;
+		glUniform1f(game_instance->renderer.reversed_cell_size_uniform, 1.0 / game_instance->renderer.cellSize);
+	}
+}
+
+

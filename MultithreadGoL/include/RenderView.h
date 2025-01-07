@@ -40,7 +40,5 @@ private:
 	//Transform currentViewTransform;
 
 	float resolutionToCellCoefficientX, resolutionToCellCoefficientY;
-	GLuint resolutionToCellCoefficientUniform;
-	GLuint shaderProgram;
 };
 

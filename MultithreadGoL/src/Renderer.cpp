@@ -1,4 +1,6 @@
 #include "Renderer.h"
+#include "fragmentShaderSource.h"
+#include "vertexShaderSource.h"
 #include <format>
 
 Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
@@ -8,18 +10,6 @@ Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
 	int resolution_width;
 	glfwGetWindowSize(window, &resolution_width, NULL);
 	cellSize = (float)resolution_width / gameToRender->getWidth();
-
-    const char* vertexShaderSource = R"(
-    #version 460 core
-    void main() {
-        const vec2 vertices[3] = vec2[3](
-            vec2(-1.0, -1.0), 
-            vec2( 3.0, -1.0), 
-            vec2(-1.0,  3.0)  
-        );
-        gl_Position = vec4(vertices[gl_VertexID], 0.0, 1.0);
-    }
-    )";
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -33,25 +23,6 @@ Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
-
-    const char* fragmentShaderSource = R"(
-    #version 460 core
-    layout(origin_upper_left) in vec4 gl_FragCoord;
-    layout(std430, binding = 3) buffer layoutName
-    {
-        int data_SSBO[];
-    };
-    out vec4 FragColor;
-    uniform int grid_width;
-    uniform float reversed_cell_size;
-    
-    void main()
-    {
-        int coord = int(gl_FragCoord.x * reversed_cell_size) + int(gl_FragCoord.y * reversed_cell_size)*grid_width;
-        
-        FragColor = vec4(data_SSBO[coord], data_SSBO[coord], data_SSBO[coord], 1);
-    }
-    )";
 
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
@@ -98,8 +69,7 @@ Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
 Renderer::Renderer() :
 	window(NULL),
 	gameToRender(NULL),
-	cellSize(0)//, 
-    //view(0,0,0,0) 
+	cellSize(0)
 {}
 
 //Renderer::~Renderer()

@@ -25,5 +25,7 @@ private:
 	void updateIterationDelay();
 	void draw();
 	void tryDraw();
+
+	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 };
 

@@ -9,7 +9,7 @@
 //#include "vertexShaderSource.h"
 //#include "fragmentShaderSource.h"
 #include <format>
-//#include "RenderView.h"
+#include "RenderView.h"
 
 
 class Renderer
@@ -20,8 +20,7 @@ public:
 	//~Renderer();
 	Renderer& operator=(const Renderer& other);
 	void render();
-
-	//RenderView view;
+	void applyRendererView(RenderView* view);
 
 private:
 	GLFWwindow* window;
@@ -35,4 +34,6 @@ private:
 
 	GLuint reversed_cell_size_uniform;
 	GLuint grid_width_uniform;
+
+	friend class FullGame;
 };
