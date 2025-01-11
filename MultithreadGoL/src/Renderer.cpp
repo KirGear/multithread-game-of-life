@@ -112,6 +112,11 @@ void Renderer::render()
     glfwSwapBuffers(window);
 }
 
+void Renderer::applyRendererView(RenderView* view)
+{
+    glUniform1f(reversed_cell_size_uniform, reversedCellSize*view->getCurrentScale());
+}
+
 void Renderer::feelSSBO()
 {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo_front);

@@ -2,6 +2,7 @@
 #include <cmath>
 #include "GameOfLife.h"
 #include "Renderer.h"
+#include "RenderView.h"
 #include <chrono>
 #include <iostream>
 
@@ -16,6 +17,7 @@ public:
 private:
 	GameOfLife automata;
 	Renderer renderer;
+	RenderView view;
 	bool paused;
 	int gameSpeed;
 	const int DEFAULT_ITERATION_DELAY;

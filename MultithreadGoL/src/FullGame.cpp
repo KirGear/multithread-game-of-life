@@ -57,15 +57,17 @@ void FullGame::handleEvents()
 void FullGame::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	FullGame* game_instance = static_cast<FullGame*>(glfwGetWindowUserPointer(window));
-	std::cout << game_instance->renderer.reversedCellSize << "\n";
-	if (yoffset > 0) {
-		game_instance->renderer.reversedCellSize *= 0.9;
-		glUniform1f(game_instance->renderer.reversed_cell_size_uniform, game_instance->renderer.reversedCellSize);
-	}
-	else if (yoffset < 0) {
-		game_instance->renderer.reversedCellSize *= 1.1;
-		glUniform1f(game_instance->renderer.reversed_cell_size_uniform, game_instance->renderer.reversedCellSize);
-	}
+	//std::cout << game_instance->renderer.reversedCellSize << "\n";
+	//if (yoffset > 0) {
+	//	game_instance->renderer.reversedCellSize *= 0.9;
+	//	glUniform1f(game_instance->renderer.reversed_cell_size_uniform, game_instance->renderer.reversedCellSize);
+	//}
+	//else if (yoffset < 0) {
+	//	game_instance->renderer.reversedCellSize *= 1.1;
+	//	glUniform1f(game_instance->renderer.reversed_cell_size_uniform, game_instance->renderer.reversedCellSize);
+	//}
+	game_instance->view.relativeScale(yoffset);
+	game_instance->renderer.applyRendererView(&game_instance->view);
 }
 
 void FullGame::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

@@ -5,13 +5,14 @@
 class RenderView
 {
 public:
+	RenderView();
 	RenderView(const int& windowWidth, const int& gridWidth, const int& gridHeight, const GLuint& shaderProgram);
 	//void relativeShift(const float& shiftX, const float& shiftY);
 	void mouseShiftStart(GLFWwindow* window);
 	void mouseShiftUpdate(GLFWwindow* window);
 	void mouseShiftEnd();
 	void setAbsolutePosition(const float& positionX, const float& positionY);
-	void relativeScale(const int& scalingPower, GLFWwindow* window);
+	void relativeScale(const int& scalingPower);
 	void viewShift(const float& shiftX, const float& shiftY);
 
 	const bool& cellValueUnderViewIndex(const int& viewIndex, bool* cells) const;
@@ -36,7 +37,7 @@ private:
 	int viewGridWidth, viewGridHeight;
 	bool mouseActive;
 	//Vector2i originalMousePosition;
-	const float origCellSize;
+	//const float origCellSize;
 	//Transform currentViewTransform;
 
 	float resolutionToCellCoefficientX, resolutionToCellCoefficientY;
