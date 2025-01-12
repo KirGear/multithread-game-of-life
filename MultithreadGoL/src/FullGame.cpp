@@ -6,7 +6,8 @@ FullGame::FullGame(const int& gridSize1, const int& gridSize2, const int& window
 	iterationDelay(std::chrono::milliseconds(DEFAULT_ITERATION_DELAY)),
 	paused(false),
 	gameSpeed(0),
-	gameRunning(true)
+	gameRunning(true),
+	threadsRunning(true)
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -36,12 +37,12 @@ void FullGame::run(const int& num_threads)
 	auto next_cycle = [this]() noexcept {
 		automata.swapBuffers();
 		Sleep(DEFAULT_ITERATION_DELAY);
-		//Sleep(1000);
+		threadsRunning = gameRunning;
 		};
 	std::barrier sync_point(num_threads, next_cycle);
 
 	auto partially_update_automata = [this, &sync_point](int beginning_index, int ending_index) {
-		while (gameRunning) {
+		while (threadsRunning) {
 			automata.partialUpdate(beginning_index, ending_index);
 			sync_point.arrive_and_wait();
 		}
@@ -57,12 +58,10 @@ void FullGame::run(const int& num_threads)
     while (!glfwWindowShouldClose(window))
     {
 		handleEvents();
-
-        //Sleep(DEFAULT_ITERATION_DELAY);
 		Sleep(16.7); //60FPS
         renderer.render();
-		//automata.update();
     }
+	gameRunning = false;
 
 	for (int i = 0; i < num_threads; i++) {
 		threads[i].join();
@@ -75,7 +74,6 @@ void FullGame::handleEvents()
 	glfwPollEvents();
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
-		gameRunning = false;
 	}
 
 	glfwSetScrollCallback(window, scroll_callback);
@@ -111,6 +109,9 @@ void FullGame::key_callback(GLFWwindow* window, int key, int scancode, int actio
 		case GLFW_KEY_DOWN:
 			std::cout << "down\n";
 			glUniform2f(game_instance->renderer.view_shift_uniform, 0.0, 0.0);
+			break;
+		case GLFW_KEY_SPACE:
+			game_instance->paused = !game_instance->paused;
 			break;
 		}
 	}

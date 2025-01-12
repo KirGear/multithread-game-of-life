@@ -30,6 +30,7 @@ private:
 	void draw();
 	void tryDraw();
 	bool gameRunning;
+	bool threadsRunning;
 
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

@@ -12,7 +12,7 @@ int main()
 {
 
     FullGame myfullgame(100, 100, 800, 100);
-    myfullgame.run(16);
+    myfullgame.run(3);
     
     glfwTerminate();
     return 0;
