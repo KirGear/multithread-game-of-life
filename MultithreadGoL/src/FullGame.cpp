@@ -45,6 +45,12 @@ void FullGame::run(const int& num_threads)
 		automata_corrected_time = min(automata_corrected_time, iterationDelay);
 		std::this_thread::sleep_for(automata_corrected_time);
 		threadsRunning = gameRunning;
+
+		std::unique_lock<std::mutex> pause_lock(pauseMutex);
+		if (paused) {
+			pauseCondition.wait(pause_lock);
+			automata_last_time_measurement = std::chrono::steady_clock::now();
+		}
 		};
 
 	std::barrier sync_point(num_threads, next_cycle);
@@ -117,6 +123,7 @@ void FullGame::key_callback(GLFWwindow* window, int key, int scancode, int actio
 			break;
 		case GLFW_KEY_SPACE:
 			game_instance->paused = !game_instance->paused;
+			game_instance->pauseCondition.notify_one();
 			break;
 		}
 	}

@@ -6,8 +6,9 @@
 #include "utils.h"
 #include <chrono>
 #include <iostream>
-#include <barrier>
 #include <thread>
+#include <barrier>
+#include <condition_variable>
 
 class FullGame
 {
@@ -32,6 +33,8 @@ private:
 	void tryDraw();
 	bool gameRunning;
 	bool threadsRunning;
+	std::mutex pauseMutex;
+	std::condition_variable pauseCondition;
 
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
