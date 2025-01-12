@@ -34,9 +34,15 @@ FullGame::FullGame(const int& gridSize1, const int& gridSize2, const int& window
 
 void FullGame::run(const int& num_threads)
 {
-	auto next_cycle = [this]() noexcept {
+	std::chrono::steady_clock::time_point last_time_measurement = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::time_point time_buffer;
+	std::chrono::milliseconds automata_time_correction;
+
+	auto next_cycle = [this, &last_time_measurement, &time_buffer, &automata_time_correction]() noexcept {
 		automata.swapBuffers();
-		Sleep(DEFAULT_ITERATION_DELAY);
+		automata_time_correction = iterationDelay - time_elapsed(last_time_measurement, time_buffer);
+		std::this_thread::sleep_for(iterationDelay + automata_time_correction);
+		last_time_measurement = std::chrono::steady_clock::now();
 		threadsRunning = gameRunning;
 		};
 	std::barrier sync_point(num_threads, next_cycle);
@@ -83,15 +89,6 @@ void FullGame::handleEvents()
 void FullGame::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	FullGame* game_instance = static_cast<FullGame*>(glfwGetWindowUserPointer(window));
-	//std::cout << game_instance->renderer.reversedCellSize << "\n";
-	//if (yoffset > 0) {
-	//	game_instance->renderer.reversedCellSize *= 0.9;
-	//	glUniform1f(game_instance->renderer.reversed_cell_size_uniform, game_instance->renderer.reversedCellSize);
-	//}
-	//else if (yoffset < 0) {
-	//	game_instance->renderer.reversedCellSize *= 1.1;
-	//	glUniform1f(game_instance->renderer.reversed_cell_size_uniform, game_instance->renderer.reversedCellSize);
-	//}
 	game_instance->view.relativeScale(yoffset);
 	game_instance->renderer.applyRendererView(&game_instance->view);
 }

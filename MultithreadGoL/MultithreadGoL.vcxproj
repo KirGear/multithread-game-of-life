@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\RenderView.cpp" />
     <ClCompile Include="src\FullGame.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="include\GameOfLife.h" />
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\RenderView.h" />
+    <ClInclude Include="include\utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

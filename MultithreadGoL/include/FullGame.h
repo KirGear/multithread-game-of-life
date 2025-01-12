@@ -3,6 +3,7 @@
 #include "GameOfLife.h"
 #include "Renderer.h"
 #include "RenderView.h"
+#include "utils.h"
 #include <chrono>
 #include <iostream>
 #include <barrier>

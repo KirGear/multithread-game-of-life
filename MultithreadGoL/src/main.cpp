@@ -11,8 +11,8 @@
 int main()
 {
 
-    FullGame myfullgame(100, 100, 800, 100);
-    myfullgame.run(3);
+    FullGame myfullgame(80, 80, 800, 100);
+    myfullgame.run(16);
     
     glfwTerminate();
     return 0;
