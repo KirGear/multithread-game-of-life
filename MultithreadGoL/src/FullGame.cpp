@@ -36,13 +36,13 @@ void FullGame::run(const int& num_threads)
 {
 	std::chrono::steady_clock::time_point last_time_measurement = std::chrono::steady_clock::now();
 	std::chrono::steady_clock::time_point time_buffer;
-	std::chrono::milliseconds automata_time_correction;
+	std::chrono::milliseconds automata_corrected_time;
 
-	auto next_cycle = [this, &last_time_measurement, &time_buffer, &automata_time_correction]() noexcept {
+	auto next_cycle = [this, &last_time_measurement, &time_buffer, &automata_corrected_time]() noexcept {
 		automata.swapBuffers();
-		automata_time_correction = iterationDelay - time_elapsed(last_time_measurement, time_buffer);
-		std::this_thread::sleep_for(iterationDelay + automata_time_correction);
-		last_time_measurement = std::chrono::steady_clock::now();
+		automata_corrected_time = 2 * iterationDelay - time_elapsed(last_time_measurement, time_buffer);
+		automata_corrected_time = min(automata_corrected_time, iterationDelay);
+		std::this_thread::sleep_for(automata_corrected_time);
 		threadsRunning = gameRunning;
 		};
 	std::barrier sync_point(num_threads, next_cycle);
