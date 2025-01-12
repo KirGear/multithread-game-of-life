@@ -5,7 +5,8 @@ FullGame::FullGame(const int& gridSize1, const int& gridSize2, const int& window
 	DEFAULT_ITERATION_DELAY(defaultIterationDelay),
 	iterationDelay(std::chrono::milliseconds(DEFAULT_ITERATION_DELAY)),
 	paused(false),
-	gameSpeed(0)
+	gameSpeed(0),
+	gameRunning(true)
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -30,16 +31,42 @@ FullGame::FullGame(const int& gridSize1, const int& gridSize2, const int& window
 	renderer = Renderer(window, &automata);
 }
 
-void FullGame::run()
+void FullGame::run(const int& num_threads)
 {
+	auto next_cycle = [this]() noexcept {
+		automata.swapBuffers();
+		Sleep(DEFAULT_ITERATION_DELAY);
+		//Sleep(1000);
+		};
+	std::barrier sync_point(num_threads, next_cycle);
+
+	auto partially_update_automata = [this, &sync_point](int beginning_index, int ending_index) {
+		while (gameRunning) {
+			automata.partialUpdate(beginning_index, ending_index);
+			sync_point.arrive_and_wait();
+		}
+		};
+
+	std::vector<std::thread> threads;
+	for (int i = 0; i < num_threads; i++) {
+		int beginning_index = automata.getHeight() * automata.getWidth() * i / num_threads;
+		int ending_index = automata.getHeight() * automata.getWidth() * (i + 1) / num_threads;
+		threads.emplace_back(partially_update_automata, beginning_index, ending_index);
+	}
+
     while (!glfwWindowShouldClose(window))
     {
 		handleEvents();
 
-        Sleep(DEFAULT_ITERATION_DELAY);
+        //Sleep(DEFAULT_ITERATION_DELAY);
+		Sleep(16.7); //60FPS
         renderer.render();
-		automata.update();
+		//automata.update();
     }
+
+	for (int i = 0; i < num_threads; i++) {
+		threads[i].join();
+	}
 }
 
 
@@ -48,6 +75,7 @@ void FullGame::handleEvents()
 	glfwPollEvents();
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+		gameRunning = false;
 	}
 
 	glfwSetScrollCallback(window, scroll_callback);

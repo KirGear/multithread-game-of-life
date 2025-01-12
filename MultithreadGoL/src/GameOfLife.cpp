@@ -21,13 +21,22 @@ GameOfLife::~GameOfLife()
 
 void GameOfLife::update()
 {
+	partialUpdate(0, gridSizeY * gridSizeX);
+	std::swap(cells, cellsBuffer);
+}
+
+void GameOfLife::partialUpdate(const int& beginning_index, const int& ending_index)
+{
 	unsigned short int currentCellNeighboursCount;
-	for (int i = 0; i < gridSizeY * gridSizeX; ++i) {
+	for (int i = beginning_index; i < ending_index; ++i) {
 		currentCellNeighboursCount = countNeighbours(i);
 		if (cells[i]) cellsBuffer[i] = currentCellNeighboursCount > 1 && currentCellNeighboursCount < 4;
 		else cellsBuffer[i] = currentCellNeighboursCount == 3;
 	}
+}
 
+void GameOfLife::swapBuffers()
+{
 	std::swap(cells, cellsBuffer);
 }
 

@@ -7,6 +7,8 @@ public:
     GameOfLife(const int& gridWidth, const int& gridHeight);
     ~GameOfLife();
     void update();
+    void partialUpdate(const int& beginning_index, const int& ending_index);
+    void swapBuffers();
     void reset();
     int* getCells();
     void clear();

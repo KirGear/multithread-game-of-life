@@ -5,6 +5,8 @@
 #include "RenderView.h"
 #include <chrono>
 #include <iostream>
+#include <barrier>
+#include <thread>
 
 class FullGame
 {
@@ -12,7 +14,7 @@ public:
 	FullGame(const int& gridSize1, const int& gridSize2, const int& windowWidth, const int& defaultIterationDelay);
 	//TODO destructor with glfwTerminate();
 	GLFWwindow* window; //TODO consider private???
-	void run();
+	void run(const int& num_threads);
 	 //TODO private
 private:
 	GameOfLife automata;
@@ -27,6 +29,7 @@ private:
 	void updateIterationDelay();
 	void draw();
 	void tryDraw();
+	bool gameRunning;
 
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
