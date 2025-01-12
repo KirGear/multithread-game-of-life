@@ -1,4 +1,5 @@
 #include "FullGame.h"
+#define RENDERING_PERIOD std::chrono::microseconds(16667) //60FPS
 
 FullGame::FullGame(const int& gridSize1, const int& gridSize2, const int& windowWidth, const int& defaultIterationDelay) :
 	automata(max(gridSize1, gridSize2), min(gridSize1, gridSize2)),
@@ -34,17 +35,18 @@ FullGame::FullGame(const int& gridSize1, const int& gridSize2, const int& window
 
 void FullGame::run(const int& num_threads)
 {
-	std::chrono::steady_clock::time_point last_time_measurement = std::chrono::steady_clock::now();
-	std::chrono::steady_clock::time_point time_buffer;
+	std::chrono::steady_clock::time_point automata_last_time_measurement = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::time_point automata_time_buffer;
 	std::chrono::milliseconds automata_corrected_time;
 
-	auto next_cycle = [this, &last_time_measurement, &time_buffer, &automata_corrected_time]() noexcept {
+	auto next_cycle = [this, &automata_last_time_measurement, &automata_time_buffer, &automata_corrected_time]() noexcept {
 		automata.swapBuffers();
-		automata_corrected_time = 2 * iterationDelay - time_elapsed(last_time_measurement, time_buffer);
+		automata_corrected_time = 2 * iterationDelay - time_elapsed(automata_last_time_measurement, automata_time_buffer);
 		automata_corrected_time = min(automata_corrected_time, iterationDelay);
 		std::this_thread::sleep_for(automata_corrected_time);
 		threadsRunning = gameRunning;
 		};
+
 	std::barrier sync_point(num_threads, next_cycle);
 
 	auto partially_update_automata = [this, &sync_point](int beginning_index, int ending_index) {
@@ -61,11 +63,17 @@ void FullGame::run(const int& num_threads)
 		threads.emplace_back(partially_update_automata, beginning_index, ending_index);
 	}
 
+	std::chrono::steady_clock::time_point rendering_last_time_measurement = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::time_point rendering_time_buffer;
+	std::chrono::microseconds rendering_corrected_time;
+
     while (!glfwWindowShouldClose(window))
     {
 		handleEvents();
-		Sleep(16.7); //60FPS
         renderer.render();
+		rendering_corrected_time = 2 * RENDERING_PERIOD - time_elapsed(rendering_last_time_measurement, rendering_time_buffer);
+		rendering_corrected_time = min(rendering_corrected_time, RENDERING_PERIOD);
+		std::this_thread::sleep_for(rendering_corrected_time);
     }
 	gameRunning = false;
 
