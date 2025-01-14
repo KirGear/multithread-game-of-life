@@ -57,10 +57,12 @@ Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
     
     grid_size_uniform = glGetUniformLocation(shaderProgram, "grid_size");
     reversed_cell_size_uniform = glGetUniformLocation(shaderProgram, "reversed_cell_size");
+    current_scale_uniform = glGetUniformLocation(shaderProgram, "current_scale");
     view_shift_uniform = glGetUniformLocation(shaderProgram, "view_shift");
     glUseProgram(shaderProgram);
     glUniform2i(grid_size_uniform, gameToRender->getWidth(), gameToRender->getHeight());
     glUniform1f(reversed_cell_size_uniform, reversedCellSize);
+    glUniform1f(current_scale_uniform, 1.0);
     glUniform2f(view_shift_uniform, 0.0, 0.0);
     
 
@@ -112,9 +114,10 @@ void Renderer::render()
     glfwSwapBuffers(window);
 }
 
-void Renderer::applyRendererView(RenderView* view)
+void Renderer::applyRendererView(const RenderView& view)
 {
-    glUniform1f(reversed_cell_size_uniform, reversedCellSize*view->getCurrentScale());
+    glUniform1f(current_scale_uniform, view.getCurrentScale());
+    glUniform2f(view_shift_uniform, view.getAbsolutePositionX(), view.getAbsolutePositionY());
 }
 
 void Renderer::feelSSBO()

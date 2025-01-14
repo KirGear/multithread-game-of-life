@@ -8,7 +8,8 @@ FullGame::FullGame(const int& gridSize1, const int& gridSize2, const int& window
 	paused(false),
 	gameSpeed(0),
 	gameRunning(true),
-	threadsRunning(true)
+	threadsRunning(true),
+	view(windowWidth, max(gridSize1, gridSize2), min(gridSize1, gridSize2))
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -75,10 +76,16 @@ void FullGame::run(const int& num_threads)
 
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetKeyCallback(window, key_callback);
+	glfwSetMouseButtonCallback(window, mouse_callback);
 
     while (!glfwWindowShouldClose(window))
     {
 		glfwPollEvents();
+		if (view.getIsActivelyChanges()) {
+			std::cout << "c";
+			view.update(window);
+			renderer.applyRendererView(view);
+		}
 
         renderer.render();
 		rendering_corrected_time = 2 * RENDERING_PERIOD - time_elapsed(rendering_last_time_measurement, rendering_time_buffer);
@@ -96,7 +103,7 @@ void FullGame::scroll_callback(GLFWwindow* window, double xoffset, double yoffse
 {
 	FullGame* game_instance = static_cast<FullGame*>(glfwGetWindowUserPointer(window));
 	game_instance->view.relativeScale(yoffset);
-	game_instance->renderer.applyRendererView(&game_instance->view);
+	game_instance->renderer.applyRendererView(game_instance->view);
 }
 
 void FullGame::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -121,6 +128,20 @@ void FullGame::key_callback(GLFWwindow* window, int key, int scancode, int actio
 			glfwSetWindowShouldClose(window, true);
 			break;
 		}
+	}
+}
+
+void FullGame::mouse_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	FullGame* game_instance = static_cast<FullGame*>(glfwGetWindowUserPointer(window));
+	
+	if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT) {
+		game_instance->view.mouseShiftStart(window);
+		std::cout << "pressed\n";
+	}
+	else if (action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_LEFT) {
+		game_instance->view.mouseShiftEnd();
+		std::cout << "unpressed\n";
 	}
 }
 

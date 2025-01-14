@@ -20,7 +20,7 @@ public:
 	//~Renderer();
 	Renderer& operator=(const Renderer& other);
 	void render();
-	void applyRendererView(RenderView* view);
+	void applyRendererView(const RenderView& view);
 
 private:
 	GLFWwindow* window;
@@ -33,6 +33,7 @@ private:
 	GLuint dummyVAO;
 
 	GLuint reversed_cell_size_uniform;
+	GLuint current_scale_uniform;
 	GLuint grid_size_uniform;
 	GLuint view_shift_uniform;
 
