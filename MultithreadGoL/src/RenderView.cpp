@@ -1,8 +1,6 @@
 #include "RenderView.h"
 #include <cmath>
 
-#include <iostream>
-
 
 RenderView::RenderView(const int& windowWidth, const int& gridWidth, const int& gridHeight):
 	currentScale(1.0),
