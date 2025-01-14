@@ -32,6 +32,7 @@ private:
 	void tryDraw();
 	bool gameRunning;
 	bool threadsRunning;
+	std::mutex automataChangeMutex;
 	std::mutex pauseMutex;
 	std::condition_variable pauseCondition;
 

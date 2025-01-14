@@ -42,6 +42,7 @@ void FullGame::run(const int& num_threads)
 
 	auto next_cycle = [this, &automata_last_time_measurement, &automata_time_buffer, &automata_corrected_time]() noexcept {
 		automata.swapBuffers();
+		automataChangeMutex.unlock();
 		automata_corrected_time = 2 * iterationDelay - time_elapsed(automata_last_time_measurement, automata_time_buffer);
 		automata_corrected_time = min(automata_corrected_time, iterationDelay);
 		std::this_thread::sleep_for(automata_corrected_time);
@@ -53,6 +54,7 @@ void FullGame::run(const int& num_threads)
 		}
 
 		threadsRunning = gameRunning;
+		automataChangeMutex.lock();
 		};
 
 	std::barrier sync_point(num_threads, next_cycle);
@@ -64,6 +66,7 @@ void FullGame::run(const int& num_threads)
 		}
 		};
 
+	automataChangeMutex.lock();
 	std::vector<std::thread> threads;
 	for (int i = 0; i < num_threads; i++) {
 		int beginning_index = automata.getHeight() * automata.getWidth() * i / num_threads;
@@ -94,6 +97,7 @@ void FullGame::run(const int& num_threads)
     }
 
 	gameRunning = false;
+	automataChangeMutex.unlock();
 	pauseCondition.notify_one();
 
 	for (int i = 0; i < num_threads; i++) {
@@ -113,18 +117,17 @@ void FullGame::key_callback(GLFWwindow* window, int key, int scancode, int actio
 	FullGame* game_instance = static_cast<FullGame*>(glfwGetWindowUserPointer(window));
 	if (action== GLFW_PRESS) {
 		switch (key) {
-		case GLFW_KEY_UP:
-			glUniform2f(game_instance->renderer.view_shift_uniform, 0.0, 200.0);
-			break;
-		case GLFW_KEY_DOWN:
-			glUniform2f(game_instance->renderer.view_shift_uniform, 0.0, 0.0);
-			break;
 		case GLFW_KEY_SPACE:
 			game_instance->paused = !game_instance->paused;
 			game_instance->pauseCondition.notify_one();
 			break;
 		case GLFW_KEY_ESCAPE:
 			glfwSetWindowShouldClose(window, true);
+			break;
+		case GLFW_KEY_R:
+			game_instance->automataChangeMutex.lock();
+			game_instance->automata.reset();
+			game_instance->automataChangeMutex.unlock();
 			break;
 		}
 	}
