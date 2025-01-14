@@ -73,9 +73,13 @@ void FullGame::run(const int& num_threads)
 	std::chrono::steady_clock::time_point rendering_time_buffer;
 	std::chrono::microseconds rendering_corrected_time;
 
+	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetKeyCallback(window, key_callback);
+
     while (!glfwWindowShouldClose(window))
     {
-		handleEvents();
+		glfwPollEvents();
+
         renderer.render();
 		rendering_corrected_time = 2 * RENDERING_PERIOD - time_elapsed(rendering_last_time_measurement, rendering_time_buffer);
 		rendering_corrected_time = min(rendering_corrected_time, RENDERING_PERIOD);
@@ -86,18 +90,6 @@ void FullGame::run(const int& num_threads)
 	for (int i = 0; i < num_threads; i++) {
 		threads[i].join();
 	}
-}
-
-
-void FullGame::handleEvents()
-{
-	glfwPollEvents();
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, true);
-	}
-
-	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetKeyCallback(window, key_callback);
 }
 
 void FullGame::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
@@ -124,6 +116,9 @@ void FullGame::key_callback(GLFWwindow* window, int key, int scancode, int actio
 		case GLFW_KEY_SPACE:
 			game_instance->paused = !game_instance->paused;
 			game_instance->pauseCondition.notify_one();
+			break;
+		case GLFW_KEY_ESCAPE:
+			glfwSetWindowShouldClose(window, true);
 			break;
 		}
 	}

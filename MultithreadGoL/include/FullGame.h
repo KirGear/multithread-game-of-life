@@ -27,7 +27,6 @@ private:
 	const int DEFAULT_ITERATION_DELAY;
 	std::chrono::milliseconds iterationDelay;
 	bool drawColor;
-	void handleEvents();
 	void updateIterationDelay();
 	void draw();
 	void tryDraw();
