@@ -1,24 +1,21 @@
 #pragma once
-#include <cmath>
-#include "GameOfLife.h"
-#include "Renderer.h"
-#include "RenderView.h"
-#include "utils.h"
 #include <chrono>
 #include <iostream>
 #include <thread>
 #include <barrier>
 #include <condition_variable>
+#include "GameOfLife.h"
+#include "Renderer.h"
+#include "RenderView.h"
+#include "utils.h"
 
 class FullGame
 {
 public:
 	FullGame(const int& gridSize1, const int& gridSize2, const int& windowWidth, const int& defaultIterationDelay);
-	//TODO destructor with glfwTerminate();
-	GLFWwindow* window; //TODO consider private???
 	void run(const int& num_threads);
-	 //TODO private
 private:
+	GLFWwindow* window;
 	GameOfLife automata;
 	Renderer renderer;
 	RenderView view;
@@ -28,8 +25,6 @@ private:
 	std::chrono::milliseconds iterationDelay;
 	bool drawColor;
 	void updateIterationDelay();
-	void draw();
-	void tryDraw();
 	bool gameRunning;
 	bool threadsRunning;
 	std::mutex automataChangeMutex;

@@ -1,11 +1,11 @@
 #include "Renderer.h"
 #include "fragmentShaderSource.h"
 #include "vertexShaderSource.h"
-#include <format>
 
 Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
 	window(window),
-	gameToRender(gameToRender)
+	gameToRender(gameToRender),
+    ssbo_size(4 * gameToRender->getHeight() * gameToRender->getWidth())
 {
 	int resolution_width;
 	glfwGetWindowSize(window, &resolution_width, NULL);
@@ -72,23 +72,18 @@ Renderer::Renderer() :
     reversedCellSize(0)
 {}
 
-//Renderer::~Renderer()
-//{
-//    glBindVertexArray(0);
-//    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-//    glDeleteProgram(shaderProgram);
-//}
-
 Renderer& Renderer::operator=(const Renderer& other)
 {
 	this->window = other.window;
 	this->gameToRender = other.gameToRender;
 	this->reversedCellSize = other.reversedCellSize;
+    this->ssbo_size = other.ssbo_size;
     this->shaderProgram = other.shaderProgram;
     this->ssbo_front = other.ssbo_front;
     this->dummyVAO = other.dummyVAO;
 
     this->reversed_cell_size_uniform = other.reversed_cell_size_uniform;
+    this->current_scale_uniform = other.current_scale_uniform;
     this->grid_size_uniform = other.grid_size_uniform;
     this->view_shift_uniform = other.view_shift_uniform;
 
@@ -97,7 +92,6 @@ Renderer& Renderer::operator=(const Renderer& other)
 
 void Renderer::render()
 {
-    //std::cout << "rendering" << std::endl;
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -117,7 +111,7 @@ void Renderer::applyRendererView(const RenderView& view)
 void Renderer::feelSSBO()
 {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo_front);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, 4*gameToRender->getHeight()*gameToRender->getWidth(), gameToRender->getCells(), GL_STATIC_READ); //TODO:  4*gameToRender->getHeight()*gameToRender->getWidth() can be optimized
+    glBufferData(GL_SHADER_STORAGE_BUFFER, ssbo_size, gameToRender->getCells(), GL_STATIC_READ);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, ssbo_front);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); // unbind;
 }

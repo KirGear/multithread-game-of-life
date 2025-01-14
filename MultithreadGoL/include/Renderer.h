@@ -1,15 +1,10 @@
 #pragma once
-#include "GameOfLife.h"
-
 #include <iostream>
 #include <glad/glad.h>
 #include <glfw3.h>
 #include <windows.h>
-
-//#include "vertexShaderSource.h"
-//#include "fragmentShaderSource.h"
-#include <format>
 #include "RenderView.h"
+#include "GameOfLife.h"
 
 
 class Renderer
@@ -17,7 +12,6 @@ class Renderer
 public:
 	Renderer(GLFWwindow* window, GameOfLife* gameToRender);
 	Renderer();
-	//~Renderer();
 	Renderer& operator=(const Renderer& other);
 	void render();
 	void applyRendererView(const RenderView& view);
@@ -27,6 +21,7 @@ private:
 	GameOfLife* gameToRender;
 	void feelSSBO();
 	float reversedCellSize;
+	int ssbo_size;
 	
 	GLuint shaderProgram;
 	GLuint ssbo_front;

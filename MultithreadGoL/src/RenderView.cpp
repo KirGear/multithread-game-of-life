@@ -1,6 +1,5 @@
+#define SCALING_EXPONENT 1.1
 #include "RenderView.h"
-#include <cmath>
-
 
 RenderView::RenderView(const int& windowWidth, const int& gridWidth, const int& gridHeight):
 	currentScale(1.0),
@@ -55,7 +54,7 @@ void RenderView::setAbsolutePosition(const float& positionX, const float& positi
 void RenderView::relativeScale(const int& scalingPower)
 {
 	currentScalePower += scalingPower;
-	currentScale = std::pow(1.1, currentScalePower); //TODO: remove magic number
+	currentScale = std::pow(SCALING_EXPONENT, currentScalePower);
 }
 
 void RenderView::viewShift(const float& shiftX, const float& shiftY)

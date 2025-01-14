@@ -36,6 +36,8 @@ FullGame::FullGame(const int& gridSize1, const int& gridSize2, const int& window
 
 void FullGame::run(const int& num_threads)
 {
+	if (!gameRunning) return;
+
 	std::chrono::steady_clock::time_point automata_last_time_measurement = std::chrono::steady_clock::now();
 	std::chrono::steady_clock::time_point automata_time_buffer;
 	std::chrono::milliseconds automata_corrected_time;
@@ -103,6 +105,8 @@ void FullGame::run(const int& num_threads)
 	for (int i = 0; i < num_threads; i++) {
 		threads[i].join();
 	}
+
+	glfwTerminate();
 }
 
 void FullGame::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
