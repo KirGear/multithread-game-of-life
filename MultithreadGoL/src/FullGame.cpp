@@ -45,13 +45,14 @@ void FullGame::run(const int& num_threads)
 		automata_corrected_time = 2 * iterationDelay - time_elapsed(automata_last_time_measurement, automata_time_buffer);
 		automata_corrected_time = min(automata_corrected_time, iterationDelay);
 		std::this_thread::sleep_for(automata_corrected_time);
-		threadsRunning = gameRunning;
 
 		std::unique_lock<std::mutex> pause_lock(pauseMutex);
 		if (paused) {
 			pauseCondition.wait(pause_lock);
 			automata_last_time_measurement = std::chrono::steady_clock::now();
 		}
+
+		threadsRunning = gameRunning;
 		};
 
 	std::barrier sync_point(num_threads, next_cycle);
@@ -82,7 +83,6 @@ void FullGame::run(const int& num_threads)
     {
 		glfwPollEvents();
 		if (view.getIsActivelyChanges()) {
-			std::cout << "c";
 			view.update(window);
 			renderer.applyRendererView(view);
 		}
@@ -92,7 +92,9 @@ void FullGame::run(const int& num_threads)
 		rendering_corrected_time = min(rendering_corrected_time, RENDERING_PERIOD);
 		std::this_thread::sleep_for(rendering_corrected_time);
     }
+
 	gameRunning = false;
+	pauseCondition.notify_one();
 
 	for (int i = 0; i < num_threads; i++) {
 		threads[i].join();
@@ -109,15 +111,12 @@ void FullGame::scroll_callback(GLFWwindow* window, double xoffset, double yoffse
 void FullGame::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	FullGame* game_instance = static_cast<FullGame*>(glfwGetWindowUserPointer(window));
-	std::cout << "pressed\n";
 	if (action== GLFW_PRESS) {
 		switch (key) {
 		case GLFW_KEY_UP:
-			std::cout << "up\n";
 			glUniform2f(game_instance->renderer.view_shift_uniform, 0.0, 200.0);
 			break;
 		case GLFW_KEY_DOWN:
-			std::cout << "down\n";
 			glUniform2f(game_instance->renderer.view_shift_uniform, 0.0, 0.0);
 			break;
 		case GLFW_KEY_SPACE:
@@ -137,11 +136,9 @@ void FullGame::mouse_callback(GLFWwindow* window, int button, int action, int mo
 	
 	if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT) {
 		game_instance->view.mouseShiftStart(window);
-		std::cout << "pressed\n";
 	}
 	else if (action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_LEFT) {
 		game_instance->view.mouseShiftEnd();
-		std::cout << "unpressed\n";
 	}
 }
 

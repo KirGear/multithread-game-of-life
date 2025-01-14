@@ -35,7 +35,6 @@ void RenderView::mouseShiftUpdate(GLFWwindow* window)
 											(pressedCursorPositionX - startingCursorPositionX) * currentScale,
 						oldAbsolutePositionY -
 											(pressedCursorPositionY - startingCursorPositionY) * currentScale);
-	std::cout << "<" << absolutePositionX << "\n";
 }
 
 void RenderView::mouseShiftEnd()

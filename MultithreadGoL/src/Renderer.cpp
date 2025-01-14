@@ -64,10 +64,6 @@ Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
     glUniform1f(reversed_cell_size_uniform, reversedCellSize);
     glUniform1f(current_scale_uniform, 1.0);
     glUniform2f(view_shift_uniform, 0.0, 0.0);
-    
-
-    //view = RenderView(resolution_width, );
-    std::cout << "renderer created" << std::endl;
 }
 
 Renderer::Renderer() :
@@ -96,8 +92,6 @@ Renderer& Renderer::operator=(const Renderer& other)
     this->grid_size_uniform = other.grid_size_uniform;
     this->view_shift_uniform = other.view_shift_uniform;
 
-    std::cout << "renderer copied" << std::endl;
-    std::cout << other.grid_size_uniform <<" ; " << reversed_cell_size_uniform  << std::endl;
     return *this;
 }
 
