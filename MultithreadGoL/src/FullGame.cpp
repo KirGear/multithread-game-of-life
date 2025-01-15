@@ -1,9 +1,11 @@
-#include "FullGame.h"
 #define RENDERING_PERIOD std::chrono::microseconds(16667) //60FPS
+#define ACCELERATION_EXPONENT 1.1
+#include "FullGame.h"
 
 FullGame::FullGame(const int& gridSize1, const int& gridSize2, const int& windowWidth, const int& defaultIterationDelay) :
 	automata(max(gridSize1, gridSize2), min(gridSize1, gridSize2)),
 	DEFAULT_ITERATION_DELAY(defaultIterationDelay),
+	iterationDelayPower(0),
 	iterationDelay(std::chrono::milliseconds(DEFAULT_ITERATION_DELAY)),
 	paused(false),
 	gameSpeed(0),
@@ -109,6 +111,12 @@ void FullGame::run(const int& num_threads)
 	glfwTerminate();
 }
 
+void FullGame::changeIterationDelay(const int& change_power)
+{
+	iterationDelayPower += change_power;
+	iterationDelay = std::chrono::milliseconds(static_cast<int>(DEFAULT_ITERATION_DELAY * std::pow(ACCELERATION_EXPONENT, iterationDelayPower)));
+}
+
 void FullGame::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	FullGame* game_instance = static_cast<FullGame*>(glfwGetWindowUserPointer(window));
@@ -132,6 +140,12 @@ void FullGame::key_callback(GLFWwindow* window, int key, int scancode, int actio
 			game_instance->automataChangeMutex.lock();
 			game_instance->automata.reset();
 			game_instance->automataChangeMutex.unlock();
+			break;
+		case GLFW_KEY_MINUS:
+			game_instance->changeIterationDelay(1);
+			break;
+		case GLFW_KEY_EQUAL:
+			game_instance->changeIterationDelay(-1);
 			break;
 		}
 	}

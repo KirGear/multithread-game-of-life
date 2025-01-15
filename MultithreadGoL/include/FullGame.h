@@ -22,9 +22,10 @@ private:
 	bool paused;
 	int gameSpeed;
 	const int DEFAULT_ITERATION_DELAY;
+	int iterationDelayPower;
 	std::chrono::milliseconds iterationDelay;
 	bool drawColor;
-	void updateIterationDelay();
+	void changeIterationDelay(const int& change_power);
 	bool gameRunning;
 	bool threadsRunning;
 	std::mutex automataChangeMutex;
