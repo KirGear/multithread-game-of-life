@@ -53,7 +53,7 @@ void RenderView::setAbsolutePosition(const float& positionX, const float& positi
 
 void RenderView::relativeScale(const int& scalingPower)
 {
-	currentScalePower += scalingPower;
+	currentScalePower -= scalingPower;
 	currentScale = std::pow(SCALING_EXPONENT, currentScalePower);
 }
 
