@@ -3,8 +3,8 @@
 int main()
 {
 
-    FullGame myfullgame(80, 80, 800, 100);
-    myfullgame.run(16);
+    FullGame myfullgame(300, 400, 1200, 100);
+    myfullgame.run(7);
 
     return 0;
 }
