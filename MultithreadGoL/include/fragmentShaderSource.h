@@ -15,9 +15,7 @@ const char* fragmentShaderSource = R"(
     
     void main()
     {
-        int coord = int(mod((gl_FragCoord.x * current_scale + view_shift.x) * reversed_cell_size, grid_size.x)) + int(mod((gl_FragCoord.y * current_scale + view_shift.y) * reversed_cell_size, grid_size.y))*grid_size.x;
-        
-        FragColor = vec4(data_SSBO[coord/32], data_SSBO[coord/32], data_SSBO[coord/32], 1);
-        //FragColor = vec4(gl_FragCoord.x/1200.0, 1,1,1);
+        float coord = floor(mod((gl_FragCoord.x * current_scale + view_shift.x) * reversed_cell_size, grid_size.x)) + floor(mod((gl_FragCoord.y * current_scale + view_shift.y) * reversed_cell_size, grid_size.y))*grid_size.x;
+        FragColor = vec4((data_SSBO[int(coord/32.0)]>>int(mod(coord, 32.0)))&1);
     }
 )";
