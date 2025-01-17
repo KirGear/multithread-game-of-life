@@ -164,6 +164,7 @@
     <ClInclude Include="dependencies\GLFW\include\glfw3.h" />
     <ClInclude Include="dependencies\GLFW\include\glfw3native.h" />
     <ClInclude Include="include\fragmentShaderSource.h" />
+    <ClInclude Include="include\params.h" />
     <ClInclude Include="include\vertexShaderSource.h" />
     <ClInclude Include="include\FullGame.h" />
     <ClInclude Include="include\GameOfLife.h" />

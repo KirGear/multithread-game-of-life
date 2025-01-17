@@ -13,7 +13,7 @@ A multithreaded C++ implementation of **Conway's Game of Life** with **OpenGL sh
 - **Resolution**: 1200 x 900
 - **Iteration Frequency**: 10 iterations per second (100ms delay)
 
-You can change these values in `main.cpp`.
+You can change these values in `params.h`.
 
 ## Controls
 - **Mouse Wheel**: Zoom in/out.

@@ -3,8 +3,8 @@
 int main()
 {
 
-    FullGame myfullgame(300, 400, 1200, 100);
-    myfullgame.run(7);
+    FullGame myfullgame(GRID_SIZE_Y, GRID_SIZE_X, WINDOW_WIDTH, SIMULATION_PERIOD);
+    myfullgame.run(WORKER_THREADS_COUNT);
 
     return 0;
 }
