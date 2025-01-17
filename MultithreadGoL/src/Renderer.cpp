@@ -5,7 +5,7 @@
 Renderer::Renderer(GLFWwindow* window, GameOfLife* gameToRender):
 	window(window),
 	gameToRender(gameToRender),
-    ssbo_size(4 * gameToRender->getHeight() * gameToRender->getWidth())
+    ssbo_size(sizeof(*(gameToRender->getCells())))
 {
 	int resolution_width;
 	glfwGetWindowSize(window, &resolution_width, NULL);

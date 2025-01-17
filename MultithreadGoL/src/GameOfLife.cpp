@@ -4,8 +4,8 @@ GameOfLife::GameOfLife(const int& gridWidth, const int& gridHeight)
 {
 	gridSizeX = gridWidth;
 	gridSizeY = gridHeight;
-	cells = new int[gridSizeY * gridSizeX];
-	cellsBuffer = new int[gridSizeY * gridSizeX];
+	cells = new std::bitset<GRID_SIZE_X * GRID_SIZE_Y>;
+	cellsBuffer = new std::bitset<GRID_SIZE_X * GRID_SIZE_Y>;
 
 	gen.seed(rd());
 	dist.param(std::bernoulli_distribution::param_type(0.3));
@@ -15,8 +15,8 @@ GameOfLife::GameOfLife(const int& gridWidth, const int& gridHeight)
 
 GameOfLife::~GameOfLife()
 {
-	delete[] cells;
-	delete[] cellsBuffer;
+	delete cells;
+	delete cellsBuffer;
 }
 
 void GameOfLife::update()
@@ -30,8 +30,8 @@ void GameOfLife::partialUpdate(const int& beginning_index, const int& ending_ind
 	unsigned short int currentCellNeighboursCount;
 	for (int i = beginning_index; i < ending_index; ++i) {
 		currentCellNeighboursCount = countNeighbours(i);
-		if (cells[i]) cellsBuffer[i] = currentCellNeighboursCount > 1 && currentCellNeighboursCount < 4;
-		else cellsBuffer[i] = currentCellNeighboursCount == 3;
+		if ((*cells)[i]) (*cellsBuffer)[i] = currentCellNeighboursCount > 1 && currentCellNeighboursCount < 4;
+		else (*cellsBuffer)[i] = currentCellNeighboursCount == 3;
 	}
 }
 
@@ -43,11 +43,11 @@ void GameOfLife::swapBuffers()
 void GameOfLife::reset()
 {
 	for (int i = 0; i < gridSizeY * gridSizeX; ++i) {
-		cells[i] = dist(gen);
+		(*cells)[i] = dist(gen);
 	}
 }
 
-int* GameOfLife::getCells()
+std::bitset<GRID_SIZE_X* GRID_SIZE_Y>* GameOfLife::getCells()
 {
 	return cells;
 }
@@ -72,24 +72,24 @@ const int& GameOfLife::getHeight() const
 unsigned short int GameOfLife::countNeighbours(const int& cellIndex)
 {
 	unsigned short int neighbourCount = 0;
-	neighbourCount += cells[(cellIndex - gridSizeX + gridSizeY * gridSizeX) % (gridSizeY * gridSizeX)]; //up
-	neighbourCount += cells[(cellIndex + gridSizeX) % (gridSizeY * gridSizeX)]; //down
-	neighbourCount += cells[(cellIndex % gridSizeX) ? cellIndex - 1 : cellIndex - 1 + gridSizeX]; //left
-	neighbourCount += cells[((cellIndex + 1) % gridSizeX) ? cellIndex + 1 : cellIndex + 1 - gridSizeX]; //right
+	neighbourCount += (*cells)[(cellIndex - gridSizeX + gridSizeY * gridSizeX) % (gridSizeY * gridSizeX)]; //up
+	neighbourCount += (*cells)[(cellIndex + gridSizeX) % (gridSizeY * gridSizeX)]; //down
+	neighbourCount += (*cells)[(cellIndex % gridSizeX) ? cellIndex - 1 : cellIndex - 1 + gridSizeX]; //left
+	neighbourCount += (*cells)[((cellIndex + 1) % gridSizeX) ? cellIndex + 1 : cellIndex + 1 - gridSizeX]; //right
 
-	neighbourCount += cells[(cellIndex % gridSizeX) ?
+	neighbourCount += (*cells)[(cellIndex % gridSizeX) ?
 		(cellIndex - 1 - gridSizeX + gridSizeY * gridSizeX) % (gridSizeY * gridSizeX) :
 		(cellIndex - 1 + gridSizeY * gridSizeX) % (gridSizeY * gridSizeX)]; //left up
 
-	neighbourCount += cells[(cellIndex % gridSizeX) ?
+	neighbourCount += (*cells)[(cellIndex % gridSizeX) ?
 		(cellIndex - 1 + gridSizeX) % (gridSizeY * gridSizeX) :
 		(cellIndex - 1 + 2 * gridSizeX) % (gridSizeY * gridSizeX)]; //left down
 
-	neighbourCount += cells[((cellIndex + 1) % gridSizeX) ?
+	neighbourCount += (*cells)[((cellIndex + 1) % gridSizeX) ?
 		(cellIndex + 1 - gridSizeX + gridSizeY * gridSizeX) % (gridSizeY * gridSizeX) :
 		(cellIndex + 1 - 2 * gridSizeX + gridSizeY * gridSizeX) % (gridSizeY * gridSizeX)]; //right up
 
-	neighbourCount += cells[((cellIndex + 1) % gridSizeX) ?
+	neighbourCount += (*cells)[((cellIndex + 1) % gridSizeX) ?
 		(cellIndex + 1 + gridSizeX) % (gridSizeY * gridSizeX) :
 		(cellIndex + 1) % (gridSizeY * gridSizeX)]; //right down
 
